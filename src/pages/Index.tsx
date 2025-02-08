@@ -45,31 +45,31 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 p-6">
       <header className="mb-8 fade-in">
         <div className="flex items-center justify-between">
           <div>
             <Badge variant="outline" className="mb-2">Beta</Badge>
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-              JobHunt AI
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">
+              AutoApply
             </h1>
             <p className="text-muted-foreground mt-1">Automate your job search</p>
           </div>
           <div className="flex gap-4">
-            <Button variant="outline" className="gap-2 glass-panel hover:bg-white/20">
+            <Button variant="outline" className="gap-2">
               Quick Start <ChevronRight className="h-4 w-4" />
             </Button>
             <Button 
               variant="outline" 
               onClick={signOut} 
-              className="gap-2 glass-panel hover:bg-white/20"
+              className="gap-2"
             >
               <LogOut className="h-4 w-4" /> Sign Out
             </Button>
           </div>
         </div>
         
-        <Card className="mt-6 p-4 glass-panel">
+        <Card className="mt-6 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Application Progress</p>
@@ -84,28 +84,28 @@ const Index = () => {
         <TabsList className="grid grid-cols-4 gap-4 bg-transparent h-auto p-0">
           <TabsTrigger
             value="dashboard"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
+            className="data-[state=active]:bg-background flex items-center gap-2 p-4 transition-all duration-200"
           >
             <BarChart3 className="h-4 w-4" />
             Dashboard
           </TabsTrigger>
           <TabsTrigger
             value="jobs"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
+            className="data-[state=active]:bg-background flex items-center gap-2 p-4 transition-all duration-200"
           >
             <BriefcaseIcon className="h-4 w-4" />
             Jobs
           </TabsTrigger>
           <TabsTrigger
             value="profile"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
+            className="data-[state=active]:bg-background flex items-center gap-2 p-4 transition-all duration-200"
           >
             <UserCircle2 className="h-4 w-4" />
             Profile
           </TabsTrigger>
           <TabsTrigger
             value="settings"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
+            className="data-[state=active]:bg-background flex items-center gap-2 p-4 transition-all duration-200"
           >
             <Settings2 className="h-4 w-4" />
             Settings

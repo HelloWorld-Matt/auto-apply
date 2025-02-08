@@ -25,41 +25,41 @@ const JobDashboard = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-6 glass-panel">
+        <Card className="p-6">
           <h3 className="font-semibold mb-2">Total Applications</h3>
-          <p className="text-3xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">24</p>
+          <p className="text-3xl font-bold text-foreground">24</p>
           <p className="text-sm text-muted-foreground">+12% from last week</p>
         </Card>
-        <Card className="p-6 glass-panel">
+        <Card className="p-6">
           <h3 className="font-semibold mb-2">Interview Requests</h3>
-          <p className="text-3xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">3</p>
+          <p className="text-3xl font-bold text-foreground">3</p>
           <p className="text-sm text-muted-foreground">2 pending responses</p>
         </Card>
-        <Card className="p-6 glass-panel">
+        <Card className="p-6">
           <h3 className="font-semibold mb-2">Match Score</h3>
-          <p className="text-3xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">85%</p>
+          <p className="text-3xl font-bold text-foreground">85%</p>
           <p className="text-sm text-muted-foreground">Average job fit</p>
         </Card>
       </div>
 
-      <Card className="p-6 glass-panel">
+      <Card className="p-6">
         <h3 className="font-semibold mb-4">Application Activity</h3>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
-              <XAxis dataKey="name" stroke="#ffffff80" />
-              <YAxis stroke="#ffffff80" />
+              <XAxis dataKey="name" stroke="#64748b" />
+              <YAxis stroke="#64748b" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(0,0,0,0.8)",
-                  border: "1px solid rgba(255,255,255,0.2)",
+                  backgroundColor: "white",
+                  border: "1px solid #e2e8f0",
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="applications"
-                stroke="#10B981"
+                stroke="#2563eb"
                 strokeWidth={2}
               />
             </LineChart>
@@ -67,13 +67,13 @@ const JobDashboard = () => {
         </div>
       </Card>
 
-      <Card className="p-6 glass-panel">
+      <Card className="p-6">
         <h3 className="font-semibold mb-4">Recent Activity</h3>
         <div className="space-y-4">
           {[1, 2, 3].map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+              className="flex items-center justify-between p-4 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
             >
               <div>
                 <h4 className="font-medium">Senior Frontend Developer</h4>
@@ -81,7 +81,7 @@ const JobDashboard = () => {
                   Applied 2 hours ago • Match Score: 92%
                 </p>
               </div>
-              <Button variant="outline" size="sm" className="glass-panel hover:bg-white/20">
+              <Button variant="outline" size="sm">
                 View Details
               </Button>
             </div>
