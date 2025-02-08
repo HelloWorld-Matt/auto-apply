@@ -45,11 +45,11 @@ const getStatusColor = (status: string) => {
     case "applied":
       return "default";
     case "interview":
-      return "success";
+      return "secondary";
     case "rejected":
       return "destructive";
     default:
-      return "secondary";
+      return "outline";
   }
 };
 
