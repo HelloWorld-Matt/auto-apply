@@ -12,7 +12,7 @@ import {
   UserCircle2,
   LogOut,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import JobDashboard from "@/components/JobDashboard";
@@ -25,8 +25,27 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Add debugging logs
+    console.log("Index page - Current user:", user);
+    
+    if (!user) {
+      console.log("No user found, redirecting to /auth");
+      navigate("/auth");
+    }
+  }, [user, navigate]);
+
+  // Show loading state while checking authentication
+  if (typeof user === 'undefined') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-secondary flex items-center justify-center">
+        <p className="text-lg">Loading...</p>
+      </div>
+    );
+  }
+
+  // User is not authenticated
   if (!user) {
-    navigate("/auth");
     return null;
   }
 

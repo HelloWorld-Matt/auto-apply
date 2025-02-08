@@ -25,18 +25,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("AuthProvider: Initializing");
+    
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("AuthProvider: Initial session check:", session?.user ?? null);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
     // Listen for changes on auth state (sign in, sign out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("AuthProvider: Auth state changed:", event, session?.user ?? null);
       setUser(session?.user ?? null);
       setLoading(false);
-      if (event === 'SIGNED_IN') navigate('/');
-      if (event === 'SIGNED_OUT') navigate('/auth');
+      
+      if (event === 'SIGNED_IN') {
+        console.log("AuthProvider: User signed in, navigating to /");
+        navigate('/');
+      }
+      if (event === 'SIGNED_OUT') {
+        console.log("AuthProvider: User signed out, navigating to /auth");
+        navigate('/auth');
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -45,6 +56,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (user) {
+        console.log("AuthProvider: Fetching profile for user:", user.id);
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -52,7 +64,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .single();
         
         if (!error && data) {
+          console.log("AuthProvider: Profile fetched:", data);
           setProfile(data);
+        } else if (error) {
+          console.error("AuthProvider: Error fetching profile:", error);
         }
       } else {
         setProfile(null);
@@ -64,6 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     try {
+      console.log("AuthProvider: Signing out");
       await supabase.auth.signOut();
       navigate('/auth');
     } catch (error) {
