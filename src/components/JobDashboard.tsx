@@ -27,17 +27,17 @@ const JobDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-6 glass-panel">
           <h3 className="font-semibold mb-2">Total Applications</h3>
-          <p className="text-3xl font-bold">24</p>
+          <p className="text-3xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">24</p>
           <p className="text-sm text-muted-foreground">+12% from last week</p>
         </Card>
         <Card className="p-6 glass-panel">
           <h3 className="font-semibold mb-2">Interview Requests</h3>
-          <p className="text-3xl font-bold">3</p>
+          <p className="text-3xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">3</p>
           <p className="text-sm text-muted-foreground">2 pending responses</p>
         </Card>
         <Card className="p-6 glass-panel">
           <h3 className="font-semibold mb-2">Match Score</h3>
-          <p className="text-3xl font-bold">85%</p>
+          <p className="text-3xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">85%</p>
           <p className="text-sm text-muted-foreground">Average job fit</p>
         </Card>
       </div>
@@ -47,10 +47,15 @@ const JobDashboard = () => {
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+              <XAxis dataKey="name" stroke="#ffffff80" />
+              <YAxis stroke="#ffffff80" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(0,0,0,0.8)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              />
               <Line
                 type="monotone"
                 dataKey="applications"
@@ -68,7 +73,7 @@ const JobDashboard = () => {
           {[1, 2, 3].map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-4 rounded-lg bg-background"
+              className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
             >
               <div>
                 <h4 className="font-medium">Senior Frontend Developer</h4>
@@ -76,7 +81,7 @@ const JobDashboard = () => {
                   Applied 2 hours ago • Match Score: 92%
                 </p>
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="glass-panel hover:bg-white/20">
                 View Details
               </Button>
             </div>

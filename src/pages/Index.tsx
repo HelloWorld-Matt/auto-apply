@@ -26,16 +26,12 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Add debugging logs
-    console.log("Index page - Current user:", user);
-    
     if (!user) {
       console.log("No user found, redirecting to /auth");
       navigate("/auth");
     }
   }, [user, navigate]);
 
-  // Show loading state while checking authentication
   if (typeof user === 'undefined') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary flex items-center justify-center">
@@ -44,25 +40,30 @@ const Index = () => {
     );
   }
 
-  // User is not authenticated
   if (!user) {
     return null;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary p-6">
-      <header className="mb-8">
+      <header className="mb-8 fade-in">
         <div className="flex items-center justify-between">
           <div>
             <Badge variant="outline" className="mb-2">Beta</Badge>
-            <h1 className="text-4xl font-bold tracking-tight">JobHunt AI</h1>
+            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+              JobHunt AI
+            </h1>
             <p className="text-muted-foreground mt-1">Automate your job search</p>
           </div>
           <div className="flex gap-4">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 glass-panel hover:bg-white/20">
               Quick Start <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" onClick={signOut} className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={signOut} 
+              className="gap-2 glass-panel hover:bg-white/20"
+            >
               <LogOut className="h-4 w-4" /> Sign Out
             </Button>
           </div>
@@ -83,47 +84,47 @@ const Index = () => {
         <TabsList className="grid grid-cols-4 gap-4 bg-transparent h-auto p-0">
           <TabsTrigger
             value="dashboard"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4"
+            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
           >
             <BarChart3 className="h-4 w-4" />
             Dashboard
           </TabsTrigger>
           <TabsTrigger
             value="jobs"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4"
+            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
           >
             <BriefcaseIcon className="h-4 w-4" />
             Jobs
           </TabsTrigger>
           <TabsTrigger
             value="profile"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4"
+            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
           >
             <UserCircle2 className="h-4 w-4" />
             Profile
           </TabsTrigger>
           <TabsTrigger
             value="settings"
-            className="data-[state=active]:glass-panel flex items-center gap-2 p-4"
+            className="data-[state=active]:glass-panel flex items-center gap-2 p-4 transition-all duration-200"
           >
             <Settings2 className="h-4 w-4" />
             Settings
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard" className="mt-6 space-y-4">
+        <TabsContent value="dashboard" className="mt-6 space-y-4 slide-up">
           <JobDashboard />
         </TabsContent>
 
-        <TabsContent value="jobs" className="mt-6 space-y-4">
+        <TabsContent value="jobs" className="mt-6 space-y-4 slide-up">
           <ApplicationTracker />
         </TabsContent>
 
-        <TabsContent value="profile" className="mt-6 space-y-4">
+        <TabsContent value="profile" className="mt-6 space-y-4 slide-up">
           <ProfileSetup />
         </TabsContent>
 
-        <TabsContent value="settings" className="mt-6 space-y-4">
+        <TabsContent value="settings" className="mt-6 space-y-4 slide-up">
           <SettingsPanel />
         </TabsContent>
       </Tabs>
