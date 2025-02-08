@@ -1,12 +1,67 @@
 
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Upload, Briefcase, Award } from "lucide-react";
+import { useAuth } from "@/components/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const ProfileSetup = () => {
+  const { user, profile } = useAuth();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: profile?.first_name || "",
+    lastName: profile?.last_name || "",
+    email: profile?.email || user?.email || "",
+    phone: profile?.phone || "",
+    portfolioUrl: profile?.portfolio_url || "",
+    summary: profile?.summary || "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSave = async () => {
+    if (!user) return;
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          portfolio_url: formData.portfolioUrl,
+          summary: formData.summary,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Card className="p-6 glass-panel">
@@ -17,29 +72,57 @@ const ProfileSetup = () => {
               This information will be used in your applications
             </p>
           </div>
-          <Button variant="outline">Save Changes</Button>
+          <Button 
+            variant="outline" 
+            onClick={handleSave}
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" placeholder="John" />
+              <Input 
+                id="firstName" 
+                placeholder="John" 
+                value={formData.firstName}
+                onChange={handleChange}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" placeholder="Doe" />
+              <Input 
+                id="lastName" 
+                placeholder="Doe" 
+                value={formData.lastName}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="john@example.com" />
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="john@example.com" 
+              value={formData.email}
+              onChange={handleChange}
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
-            <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" />
+            <Input 
+              id="phone" 
+              type="tel" 
+              placeholder="+1 (555) 000-0000" 
+              value={formData.phone}
+              onChange={handleChange}
+            />
           </div>
         </div>
       </Card>
@@ -58,8 +141,13 @@ const ProfileSetup = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="portfolio">Portfolio URL</Label>
-            <Input id="portfolio" placeholder="https://your-portfolio.com" />
+            <Label htmlFor="portfolioUrl">Portfolio URL</Label>
+            <Input 
+              id="portfolioUrl" 
+              placeholder="https://your-portfolio.com" 
+              value={formData.portfolioUrl}
+              onChange={handleChange}
+            />
           </div>
         </div>
       </Card>
@@ -73,6 +161,8 @@ const ProfileSetup = () => {
               id="summary"
               placeholder="Write a brief professional summary..."
               className="min-h-[100px]"
+              value={formData.summary}
+              onChange={handleChange}
             />
           </div>
 

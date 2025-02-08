@@ -10,8 +10,11 @@ import {
   BriefcaseIcon,
   Settings2,
   UserCircle2,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
 import JobDashboard from "@/components/JobDashboard";
 import ProfileSetup from "@/components/ProfileSetup";
 import ApplicationTracker from "@/components/ApplicationTracker";
@@ -19,6 +22,13 @@ import SettingsPanel from "@/components/SettingsPanel";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  if (!user) {
+    navigate("/auth");
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary p-6">
@@ -29,9 +39,14 @@ const Index = () => {
             <h1 className="text-4xl font-bold tracking-tight">JobHunt AI</h1>
             <p className="text-muted-foreground mt-1">Automate your job search</p>
           </div>
-          <Button variant="outline" className="gap-2">
-            Quick Start <ChevronRight className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-4">
+            <Button variant="outline" className="gap-2">
+              Quick Start <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" onClick={signOut} className="gap-2">
+              <LogOut className="h-4 w-4" /> Sign Out
+            </Button>
+          </div>
         </div>
         
         <Card className="mt-6 p-4 glass-panel">
