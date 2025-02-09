@@ -27,7 +27,7 @@ const getStatusColor = (status: ApplicationStatus) => {
     case 'in_progress':
       return 'secondary';
     case 'completed':
-      return 'success';
+      return 'outline';
     case 'failed':
       return 'destructive';
     default:
@@ -69,8 +69,20 @@ const AutomatedApplications = () => {
     }
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to submit job applications",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase.from('automated_applications').insert({
         job_url: jobUrl.trim(),
+        user_id: user.id,
       });
 
       if (error) throw error;
