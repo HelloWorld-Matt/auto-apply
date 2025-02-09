@@ -75,6 +75,7 @@ export type Database = {
           email: string | null
           first_name: string | null
           id: string
+          job_types: string[] | null
           last_name: string | null
           minimum_match_percentage: number | null
           phone: string | null
@@ -91,6 +92,7 @@ export type Database = {
           email?: string | null
           first_name?: string | null
           id: string
+          job_types?: string[] | null
           last_name?: string | null
           minimum_match_percentage?: number | null
           phone?: string | null
@@ -107,6 +109,7 @@ export type Database = {
           email?: string | null
           first_name?: string | null
           id?: string
+          job_types?: string[] | null
           last_name?: string | null
           minimum_match_percentage?: number | null
           phone?: string | null

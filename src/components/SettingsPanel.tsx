@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -20,6 +19,9 @@ const SettingsPanel = () => {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>(
+    profile?.job_types || ['full-time']
+  );
 
   const handleAutoApplyToggle = async (checked: boolean) => {
     if (!user) return;
@@ -77,6 +79,54 @@ const SettingsPanel = () => {
     }
   };
 
+  const handleJobTypeToggle = async (jobType: string) => {
+    if (!user) return;
+    
+    let updatedJobTypes: string[];
+    if (selectedJobTypes.includes(jobType)) {
+      // Remove job type if it's already selected
+      updatedJobTypes = selectedJobTypes.filter(type => type !== jobType);
+    } else {
+      // Add job type if it's not selected
+      updatedJobTypes = [...selectedJobTypes, jobType];
+    }
+
+    // Ensure at least one job type is selected
+    if (updatedJobTypes.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select at least one job type",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ job_types: updatedJobTypes })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setSelectedJobTypes(updatedJobTypes);
+      toast({
+        title: "Job Types Updated",
+        description: "Your preferred job types have been updated",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Card className="p-6 glass-panel">
@@ -119,18 +169,17 @@ const SettingsPanel = () => {
           <div className="space-y-2">
             <Label>Job Types</Label>
             <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" size="sm">
-                Full-time
-              </Button>
-              <Button variant="outline" size="sm">
-                Part-time
-              </Button>
-              <Button variant="outline" size="sm">
-                Contract
-              </Button>
-              <Button variant="outline" size="sm">
-                Freelance
-              </Button>
+              {["full-time", "part-time", "contract", "freelance"].map((jobType) => (
+                <Button
+                  key={jobType}
+                  variant={selectedJobTypes.includes(jobType) ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => handleJobTypeToggle(jobType)}
+                  disabled={isLoading}
+                >
+                  {jobType.charAt(0).toUpperCase() + jobType.slice(1)}
+                </Button>
+              ))}
             </div>
           </div>
         </div>
