@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import { Upload, Briefcase, Award } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Slider } from "@/components/ui/slider";
 
 const ProfileSetup = () => {
   const { user, profile } = useAuth();
@@ -23,16 +23,11 @@ const ProfileSetup = () => {
     summary: profile?.summary || "",
     desiredJobTitles: profile?.desired_job_titles?.join(", ") || "",
     desiredLocations: profile?.desired_locations?.join(", ") || "",
-    minimumMatchPercentage: profile?.minimum_match_percentage || 85,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
-  };
-
-  const handleSliderChange = (value: number[]) => {
-    setFormData(prev => ({ ...prev, minimumMatchPercentage: value[0] }));
   };
 
   const handleCVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +86,6 @@ const ProfileSetup = () => {
           summary: formData.summary,
           desired_job_titles: formData.desiredJobTitles.split(',').map(s => s.trim()),
           desired_locations: formData.desiredLocations.split(',').map(s => s.trim()),
-          minimum_match_percentage: formData.minimumMatchPercentage,
         });
 
       if (error) throw error;
@@ -238,20 +232,6 @@ const ProfileSetup = () => {
             />
             <p className="text-sm text-muted-foreground">
               Separate multiple locations with commas
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Minimum Match Percentage</Label>
-            <Slider
-              defaultValue={[formData.minimumMatchPercentage]}
-              max={100}
-              min={0}
-              step={5}
-              onValueChange={handleSliderChange}
-            />
-            <p className="text-sm text-muted-foreground">
-              Only show jobs with at least {formData.minimumMatchPercentage}% match to your profile
             </p>
           </div>
         </div>
