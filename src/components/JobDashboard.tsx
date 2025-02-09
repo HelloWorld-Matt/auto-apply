@@ -1,6 +1,5 @@
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   LineChart,
   Line,
@@ -10,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import AutomatedApplications from "./AutomatedApplications";
 
 const data = [
   { name: "Mon", applications: 4 },
@@ -42,6 +42,8 @@ const JobDashboard = () => {
         </Card>
       </div>
 
+      <AutomatedApplications />
+
       <Card className="p-6">
         <h3 className="font-semibold mb-4">Application Activity</h3>
         <div className="h-[300px] w-full">
@@ -64,28 +66,6 @@ const JobDashboard = () => {
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h3 className="font-semibold mb-4">Recent Activity</h3>
-        <div className="space-y-4">
-          {[1, 2, 3].map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between p-4 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
-            >
-              <div>
-                <h4 className="font-medium">Senior Frontend Developer</h4>
-                <p className="text-sm text-muted-foreground">
-                  Applied 2 hours ago • Match Score: 92%
-                </p>
-              </div>
-              <Button variant="outline" size="sm">
-                View Details
-              </Button>
-            </div>
-          ))}
         </div>
       </Card>
     </div>

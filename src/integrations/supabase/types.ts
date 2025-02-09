@@ -9,6 +9,50 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      automated_applications: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          job_title: string | null
+          job_url: string
+          status: Database["public"]["Enums"]["application_status"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          job_title?: string | null
+          job_url: string
+          status?: Database["public"]["Enums"]["application_status"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          job_title?: string | null
+          job_url?: string
+          status?: Database["public"]["Enums"]["application_status"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automated_applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -53,7 +97,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      application_status: "pending" | "in_progress" | "completed" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
