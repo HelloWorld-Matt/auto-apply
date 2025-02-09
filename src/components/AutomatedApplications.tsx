@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 type ApplicationStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
 
@@ -18,6 +19,10 @@ interface AutomatedApplication {
   status: ApplicationStatus;
   error_message: string | null;
   created_at: string;
+  match_percentage: number | null;
+  job_description: string | null;
+  cover_letter_sent: boolean;
+  application_method: string | null;
 }
 
 const getStatusColor = (status: ApplicationStatus) => {
@@ -36,8 +41,8 @@ const getStatusColor = (status: ApplicationStatus) => {
 };
 
 const AutomatedApplications = () => {
-  const [jobUrl, setJobUrl] = useState("");
   const { toast } = useToast();
+  const [autoApplyEnabled, setAutoApplyEnabled] = useState(false);
 
   const { data: applications, refetch } = useQuery({
     queryKey: ['automated-applications'],
@@ -56,49 +61,38 @@ const AutomatedApplications = () => {
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!jobUrl.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a job URL",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const toggleAutoApply = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
         toast({
           title: "Error",
-          description: "You must be logged in to submit job applications",
+          description: "You must be logged in to change automation settings",
           variant: "destructive",
         });
         return;
       }
 
-      const { error } = await supabase.from('automated_applications').insert({
-        job_url: jobUrl.trim(),
-        user_id: user.id,
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .update({ auto_apply: !autoApplyEnabled })
+        .eq('id', user.id);
 
       if (error) throw error;
 
+      setAutoApplyEnabled(!autoApplyEnabled);
       toast({
-        title: "Success",
-        description: "Job application queued for automation",
+        title: autoApplyEnabled ? "Automation Disabled" : "Automation Enabled",
+        description: autoApplyEnabled 
+          ? "Job applications will now require manual approval" 
+          : "Matching jobs will be automatically applied to",
       });
-
-      setJobUrl("");
-      refetch();
     } catch (error) {
-      console.error('Error submitting job:', error);
+      console.error('Error toggling auto-apply:', error);
       toast({
         title: "Error",
-        description: "Failed to submit job for automation",
+        description: "Failed to update automation settings",
         variant: "destructive",
       });
     }
@@ -107,23 +101,26 @@ const AutomatedApplications = () => {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h3 className="font-semibold mb-4">Add New Job for Automation</h3>
-        <form onSubmit={handleSubmit} className="flex gap-4">
-          <Input
-            type="url"
-            placeholder="Enter job posting URL"
-            value={jobUrl}
-            onChange={(e) => setJobUrl(e.target.value)}
-            className="flex-1"
-          />
-          <Button type="submit">
-            Queue Application
-          </Button>
-        </form>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold">Automation Settings</h3>
+            <p className="text-sm text-muted-foreground">
+              Configure how the system handles matching job applications
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="auto-apply">Auto-apply to matching jobs</Label>
+            <Switch
+              id="auto-apply"
+              checked={autoApplyEnabled}
+              onCheckedChange={toggleAutoApply}
+            />
+          </div>
+        </div>
       </Card>
 
       <Card className="p-6">
-        <h3 className="font-semibold mb-4">Recent Automated Applications</h3>
+        <h3 className="font-semibold mb-4">Automated Applications</h3>
         <div className="space-y-4">
           {applications?.map((app) => (
             <div
@@ -138,6 +135,11 @@ const AutomatedApplications = () => {
                   <Badge variant={getStatusColor(app.status)}>
                     {app.status.replace('_', ' ')}
                   </Badge>
+                  {app.match_percentage && (
+                    <Badge variant="outline">
+                      {app.match_percentage}% Match
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {app.company_name || 'Company Pending'} •{' '}
@@ -148,19 +150,31 @@ const AutomatedApplications = () => {
                     Error: {app.error_message}
                   </p>
                 )}
+                {app.job_description && (
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                    {app.job_description}
+                  </p>
+                )}
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.open(app.job_url, '_blank')}
-              >
-                View Job
-              </Button>
+              <div className="flex gap-2">
+                {app.status === 'pending' && (
+                  <Button variant="secondary" size="sm">
+                    Review Match
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(app.job_url, '_blank')}
+                >
+                  View Job
+                </Button>
+              </div>
             </div>
           ))}
           {applications?.length === 0 && (
             <p className="text-center text-muted-foreground py-4">
-              No automated applications yet
+              No automated applications yet. Make sure your profile and job preferences are set up.
             </p>
           )}
         </div>

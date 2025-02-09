@@ -11,34 +11,46 @@ export type Database = {
     Tables: {
       automated_applications: {
         Row: {
+          application_method: string | null
           company_name: string | null
+          cover_letter_sent: boolean | null
           created_at: string
           error_message: string | null
           id: string
+          job_description: string | null
           job_title: string | null
           job_url: string
+          match_percentage: number | null
           status: Database["public"]["Enums"]["application_status"] | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          application_method?: string | null
           company_name?: string | null
+          cover_letter_sent?: boolean | null
           created_at?: string
           error_message?: string | null
           id?: string
+          job_description?: string | null
           job_title?: string | null
           job_url: string
+          match_percentage?: number | null
           status?: Database["public"]["Enums"]["application_status"] | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          application_method?: string | null
           company_name?: string | null
+          cover_letter_sent?: boolean | null
           created_at?: string
           error_message?: string | null
           id?: string
+          job_description?: string | null
           job_title?: string | null
           job_url?: string
+          match_percentage?: number | null
           status?: Database["public"]["Enums"]["application_status"] | null
           updated_at?: string
           user_id?: string
@@ -55,33 +67,48 @@ export type Database = {
       }
       profiles: {
         Row: {
+          auto_apply: boolean | null
           created_at: string
+          cv_url: string | null
+          desired_job_titles: string[] | null
+          desired_locations: string[] | null
           email: string | null
           first_name: string | null
           id: string
           last_name: string | null
+          minimum_match_percentage: number | null
           phone: string | null
           portfolio_url: string | null
           summary: string | null
           updated_at: string
         }
         Insert: {
+          auto_apply?: boolean | null
           created_at?: string
+          cv_url?: string | null
+          desired_job_titles?: string[] | null
+          desired_locations?: string[] | null
           email?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          minimum_match_percentage?: number | null
           phone?: string | null
           portfolio_url?: string | null
           summary?: string | null
           updated_at?: string
         }
         Update: {
+          auto_apply?: boolean | null
           created_at?: string
+          cv_url?: string | null
+          desired_job_titles?: string[] | null
+          desired_locations?: string[] | null
           email?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          minimum_match_percentage?: number | null
           phone?: string | null
           portfolio_url?: string | null
           summary?: string | null

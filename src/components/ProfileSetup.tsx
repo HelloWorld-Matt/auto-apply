@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Upload, Briefcase, Award } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Slider } from "@/components/ui/slider";
 
 const ProfileSetup = () => {
   const { user, profile } = useAuth();
@@ -21,11 +21,57 @@ const ProfileSetup = () => {
     phone: profile?.phone || "",
     portfolioUrl: profile?.portfolio_url || "",
     summary: profile?.summary || "",
+    desiredJobTitles: profile?.desired_job_titles?.join(", ") || "",
+    desiredLocations: profile?.desired_locations?.join(", ") || "",
+    minimumMatchPercentage: profile?.minimum_match_percentage || 85,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSliderChange = (value: number[]) => {
+    setFormData(prev => ({ ...prev, minimumMatchPercentage: value[0] }));
+  };
+
+  const handleCVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    const file = e.target.files[0];
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user?.id}/${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('cvs')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('cvs')
+        .getPublicUrl(filePath);
+
+      // Update profile with CV URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ cv_url: publicUrl })
+        .eq('id', user?.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "CV Uploaded",
+        description: "Your CV has been successfully uploaded",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: error.message,
+      });
+    }
   };
 
   const handleSave = async () => {
@@ -43,6 +89,9 @@ const ProfileSetup = () => {
           phone: formData.phone,
           portfolio_url: formData.portfolioUrl,
           summary: formData.summary,
+          desired_job_titles: formData.desiredJobTitles.split(',').map(s => s.trim()),
+          desired_locations: formData.desiredLocations.split(',').map(s => s.trim()),
+          minimum_match_percentage: formData.minimumMatchPercentage,
         });
 
       if (error) throw error;
@@ -64,7 +113,7 @@ const ProfileSetup = () => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <Card className="p-6 glass-panel">
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-semibold">Basic Information</h3>
@@ -127,16 +176,27 @@ const ProfileSetup = () => {
         </div>
       </Card>
 
-      <Card className="p-6 glass-panel">
-        <h3 className="text-lg font-semibold mb-4">Resume & Portfolio</h3>
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">Resume Upload</h3>
         <div className="space-y-4">
           <div className="border-2 border-dashed rounded-lg p-6 text-center">
             <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Drag and drop your resume here, or click to browse
+              Upload your CV for automated job matching
             </p>
-            <Button variant="outline" className="mt-4">
-              Upload Resume
+            <Input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              className="hidden"
+              id="cv-upload"
+              onChange={handleCVUpload}
+            />
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={() => document.getElementById('cv-upload')?.click()}
+            >
+              Upload CV
             </Button>
           </div>
 
@@ -152,7 +212,52 @@ const ProfileSetup = () => {
         </div>
       </Card>
 
-      <Card className="p-6 glass-panel">
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">Job Preferences</h3>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="desiredJobTitles">Desired Job Titles</Label>
+            <Input
+              id="desiredJobTitles"
+              placeholder="Software Engineer, Frontend Developer, etc."
+              value={formData.desiredJobTitles}
+              onChange={handleChange}
+            />
+            <p className="text-sm text-muted-foreground">
+              Separate multiple job titles with commas
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="desiredLocations">Desired Locations</Label>
+            <Input
+              id="desiredLocations"
+              placeholder="London, Remote, etc."
+              value={formData.desiredLocations}
+              onChange={handleChange}
+            />
+            <p className="text-sm text-muted-foreground">
+              Separate multiple locations with commas
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Minimum Match Percentage</Label>
+            <Slider
+              defaultValue={[formData.minimumMatchPercentage]}
+              max={100}
+              min={0}
+              step={5}
+              onValueChange={handleSliderChange}
+            />
+            <p className="text-sm text-muted-foreground">
+              Only show jobs with at least {formData.minimumMatchPercentage}% match to your profile
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Professional Summary</h3>
         <div className="space-y-4">
           <div className="space-y-2">
